@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * ConsignOrderInfoRequest
+ * 寄售订单查询请求，可按商品、订单或批次定位并控制费用明细
  */
 @Data
 public class ConsignOrderInfoRequest {
@@ -45,4 +45,12 @@ public class ConsignOrderInfoRequest {
      */
     @SerializedName("page_size")
     private Long pageSize;
+
+    /** 是否查询服务费，1 为查询 */
+    @SerializedName("is_fee_detail")
+    private Integer isFeeDetail;
+
+    /** 是否查询取回费，1 为查询 */
+    @SerializedName("is_retrieve")
+    private Integer isRetrieve;
 }

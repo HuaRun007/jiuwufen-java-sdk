@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * QueryPropertiesResponse
+ * 类目属性查询的 data 结果，包含属性选项与必填标记
  */
 @Data
 public class QueryPropertiesResponse {
@@ -17,6 +17,7 @@ public class QueryPropertiesResponse {
     private List<PropertyItem> list;
 
     
+    /** 类目下单个可填属性 */
     @Data
     public static class PropertyItem {
         
@@ -37,6 +38,10 @@ public class QueryPropertiesResponse {
          */
         @SerializedName("property_type")
         private Integer propertyType;
+
+        /** 可选属性值，多个值由平台字符串表示 */
+        @SerializedName("value_options")
+        private String valueOptions;
         
         /**
          * 是否必填

@@ -2,10 +2,9 @@ package com.jiuwufen.sdk.model.goods;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Data;
-import java.util.List;
 
 /**
- * GetBrandIdentifyAbilityRequest
+ * 查询类目下可鉴别品牌，二级类目可选
  */
 @Data
 public class GetBrandIdentifyAbilityRequest {
@@ -15,6 +14,10 @@ public class GetBrandIdentifyAbilityRequest {
      */
     @SerializedName("l1_category_id")
     private Long l1CategoryId;
+
+    /** 二级类目 ID，可选 */
+    @SerializedName("l2_category_id")
+    private Integer l2CategoryId;
     
     /**
      * 品牌名称

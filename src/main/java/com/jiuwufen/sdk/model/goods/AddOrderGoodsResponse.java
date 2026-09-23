@@ -1,24 +1,10 @@
 package com.jiuwufen.sdk.model.goods;
 
-import com.google.gson.annotations.SerializedName;
 import lombok.Data;
-import java.util.List;
 
 /**
- * AddOrderGoodsResponse
+ * 新增商品成功后的 data 载体，公共 status 和 msg 由 CommonResponse 处理
  */
 @Data
 public class AddOrderGoodsResponse {
-    
-    /**
-     * 状态码
-     */
-    @SerializedName("status")
-    private Integer status;
-    
-    /**
-     * 消息
-     */
-    @SerializedName("msg")
-    private String msg;
 }

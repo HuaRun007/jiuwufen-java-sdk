@@ -1,18 +1,10 @@
 package com.jiuwufen.sdk.model.goods;
 
-import com.google.gson.annotations.SerializedName;
 import lombok.Data;
-import java.util.List;
 
 /**
- * CopyOnSaleResponse
+ * 复制上架成功后的 data 载体，公共 msg 由 CommonResponse 处理
  */
 @Data
 public class CopyOnSaleResponse {
-    
-    /**
-     * 消息
-     */
-    @SerializedName("msg")
-    private String msg;
 }

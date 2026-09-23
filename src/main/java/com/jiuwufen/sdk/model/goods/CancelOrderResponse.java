@@ -1,18 +1,10 @@
 package com.jiuwufen.sdk.model.goods;
 
-import com.google.gson.annotations.SerializedName;
 import lombok.Data;
-import java.util.List;
 
 /**
- * CancelOrderResponse
+ * 下架成功后的 data 载体，请求 ID 由 CommonResponse 处理
  */
 @Data
 public class CancelOrderResponse {
-    
-    /**
-     * 请求ID
-     */
-    @SerializedName("req_id")
-    private String reqId;
 }

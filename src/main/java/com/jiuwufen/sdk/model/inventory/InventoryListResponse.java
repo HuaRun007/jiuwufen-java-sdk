@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * InventoryListResponse
+ * 库存查询的 data 结果，区分平台库存和外部可售库存
  */
 @Data
 public class InventoryListResponse {
@@ -17,6 +17,7 @@ public class InventoryListResponse {
     private List<InventoryItem> detail;
 
     
+    /** 单个商家 SKU 的库存详情 */
     @Data
     public static class InventoryItem {
         
@@ -43,5 +44,9 @@ public class InventoryListResponse {
          */
         @SerializedName("lock_qty")
         private Long lockQty;
+
+        /** 外部可售库存 */
+        @SerializedName("external_salable_qty")
+        private Long externalSalableQty;
     }
 }

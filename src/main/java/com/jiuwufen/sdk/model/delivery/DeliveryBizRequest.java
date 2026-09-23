@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * DeliveryBizRequest
+ * 平台发货请求，包含卖家订单号和发货地址
  */
 @Data
 public class DeliveryBizRequest {
@@ -23,6 +23,7 @@ public class DeliveryBizRequest {
     private DeliveryAddress sendAddress;
 
     
+    /** 平台面单使用的卖家发货地址 */
     @Data
     public static class DeliveryAddress {
         
@@ -55,5 +56,9 @@ public class DeliveryBizRequest {
          */
         @SerializedName("mobile")
         private String mobile;
+
+        /** 街道地址，可选 */
+        @SerializedName("street")
+        private String street;
     }
 }
