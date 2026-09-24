@@ -2,6 +2,9 @@ package com.jiuwufen.sdk;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.jiuwufen.sdk.api.*;
 import com.jiuwufen.sdk.exception.ApiException;
@@ -222,10 +225,8 @@ public class JiuWuFenClient {
                     throw new ApiException(-1, "HTTP Error: " + response.code(), "");
                 }
 
-                // 解析响应
-                CommonResponse<T> commonResponse = gson.fromJson(responseBody,
-                        com.google.gson.reflect.TypeToken.getParameterized(
-                                CommonResponse.class, responseClass).getType());
+                // 统一兼容接口以空数组表示空对象的响应。
+                CommonResponse<T> commonResponse = parseResponse(responseBody, responseClass);
 
                 // 检查业务状态码
                 if (commonResponse.getStatus() != 0) {
@@ -306,8 +307,8 @@ public class JiuWuFenClient {
                     throw new ApiException(-1, "HTTP Error: " + response.code(), "");
                 }
 
-                Type responseType = TypeToken.getParameterized(CommonResponse.class, dataType).getType();
-                CommonResponse<T> commonResponse = gson.fromJson(responseBody, responseType);
+                // 泛型响应与 Class 响应使用相同的空数组兼容规则。
+                CommonResponse<T> commonResponse = parseResponse(responseBody, dataType);
 
                 if (commonResponse.getStatus() != 0) {
                     throw new ApiException(
@@ -326,6 +327,34 @@ public class JiuWuFenClient {
         } catch (Exception e) {
             logger.error("Unexpected error", e);
             throw new ApiException(-1, "Unexpected error: " + e.getMessage(), "");
+        }
+    }
+
+    /**
+     * 优先按声明类型解析；仅在解析失败且 data 为空数组时，尝试将其作为空对象解析。
+     *
+     * @param responseBody 平台返回的 JSON 响应
+     * @param dataType data 的目标类型，包含普通类及泛型类型
+     * @param <T> 响应数据类型
+     * @return 解析后的响应；空响应或 JSON null 沿用 Gson 的 null 返回语义
+     * @throws JsonSyntaxException JSON 格式错误或兼容处理后仍与目标类型不匹配
+     */
+    private <T> CommonResponse<T> parseResponse(String responseBody, Type dataType) {
+        Type responseType = TypeToken.getParameterized(CommonResponse.class, dataType).getType();
+        try {
+            // 优先保留 Gson 原有行为，避免将正常数组、集合或动态 JSON 改成对象。
+            return gson.fromJson(responseBody, responseType);
+        } catch (JsonSyntaxException e) {
+            // 只兼容空数组；非空数组和其他结构错误继续报错，避免静默丢失业务数据。
+            JsonElement responseJson = gson.fromJson(responseBody, JsonElement.class);
+            if (responseJson != null && responseJson.isJsonObject()) {
+                JsonElement data = responseJson.getAsJsonObject().get("data");
+                if (data != null && data.isJsonArray() && data.getAsJsonArray().size() == 0) {
+                    responseJson.getAsJsonObject().add("data", new JsonObject());
+                    return gson.fromJson(responseJson, responseType);
+                }
+            }
+            throw e;
         }
     }
 
