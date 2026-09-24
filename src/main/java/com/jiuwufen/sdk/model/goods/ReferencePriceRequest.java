@@ -9,7 +9,7 @@ import java.util.List;
  */
 @Data
 public class ReferencePriceRequest {
-    
+
     /**
      * 商品编号
      */
