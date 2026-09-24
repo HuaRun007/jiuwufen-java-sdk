@@ -20,13 +20,13 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * 95分开放平台 SDK 客户端
- * 
+ *
  * <p>
  * 提供完整的 API 调用能力，包括商品管理、订单处理、库存同步等功能。
- * 
+ *
  * <p>
  * 使用示例：
- * 
+ *
  * <pre>{@code
  * JiuWuFenClient client = JiuWuFenClient.builder()
  *         .erpName("your-erp-name")
@@ -35,13 +35,13 @@ import java.util.concurrent.TimeUnit;
  *         .platformSecret("your-platform-secret")
  *         .baseUrl("http://d1.95fenapp.com")
  *         .build();
- * 
+ *
  * // 调用 API
  * SendSMSRequest request = new SendSMSRequest();
  * request.setMobile("13800000000");
  * SendSMSResponse response = client.merchant().sendSMSCaptcha(request);
  * }</pre>
- * 
+ *
  * @author 95分开放平台团队
  * @version 1.0.0
  */
@@ -154,7 +154,7 @@ public class JiuWuFenClient {
 
     /**
      * 执行 HTTP 请求
-     * 
+     *
      * @param path          请求路径
      * @param requestBody   请求体对象
      * @param responseClass 响应类型
@@ -240,6 +240,8 @@ public class JiuWuFenClient {
         } catch (IOException e) {
             logger.error("Network error", e);
             throw new ApiException(-1, "Network error: " + e.getMessage(), "");
+        } catch (ApiException e) {
+            throw e;
         } catch (Exception e) {
             logger.error("Unexpected error", e);
             throw new ApiException(-1, "Unexpected error: " + e.getMessage(), "");
@@ -319,6 +321,8 @@ public class JiuWuFenClient {
         } catch (IOException e) {
             logger.error("Network error", e);
             throw new ApiException(-1, "Network error: " + e.getMessage(), "");
+        } catch (ApiException e) {
+            throw e;
         } catch (Exception e) {
             logger.error("Unexpected error", e);
             throw new ApiException(-1, "Unexpected error: " + e.getMessage(), "");
@@ -335,8 +339,10 @@ public class JiuWuFenClient {
             return new java.util.LinkedHashMap<>(map);
         }
         String json = gson.toJson(obj);
-        return gson.fromJson(json, new com.google.gson.reflect.TypeToken<Map<String, Object>>() {
-        }.getType());
+        Map<String, Object> result = gson.fromJson(json,
+                new com.google.gson.reflect.TypeToken<Map<String, Object>>() {
+                }.getType());
+        return result == null ? new LinkedHashMap<>() : result;
     }
 
     /**
