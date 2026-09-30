@@ -80,7 +80,7 @@ public class DigitalProductApi {
      * @throws ApiException 平台业务拒绝或客户端调用失败，保留现有错误码和请求号
      */
     public InspectLogisticsResponse inspectLogisticsQuery(InspectLogisticsRequest request) throws ApiException {
-        return client.execute("/api_tob/inspectLogisticsQuery/v1.0", body, InspectLogisticsResponse.class);
+        return client.execute("/api_tob/inspectLogisticsQuery/v1.0", request, InspectLogisticsResponse.class);
     }
 
     /**
