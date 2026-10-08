@@ -9,6 +9,10 @@ import lombok.Data;
 @Data
 public class BindCertificateBuckleRequest {
 
+    /** 平台商品编码；序列化为goods_sn，不替代原有字段。 */
+    @SerializedName("goods_sn")
+    private String goodsSn;
+
     @SerializedName("erpSkuId")
     private String erpSkuId;
 
