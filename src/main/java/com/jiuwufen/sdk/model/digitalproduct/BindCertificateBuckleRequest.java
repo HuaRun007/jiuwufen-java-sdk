@@ -13,12 +13,12 @@ public class BindCertificateBuckleRequest {
     @SerializedName("goods_sn")
     private String goodsSn;
 
-    @SerializedName("erpSkuId")
+    @SerializedName("erp_sku_id")
     private String erpSkuId;
 
-    @SerializedName("antiFakeCode")
+    @SerializedName("anti_fake_code")
     private String antiFakeCode;
 
-    @SerializedName("certificateNo")
+    @SerializedName("certificate_number")
     private String certificateNo;
 }
