@@ -21,4 +21,11 @@ public class DeliveryApi {
     public DeliveryBizResponse deliveryBiz(DeliveryBizRequest request) throws ApiException {
         return client.execute("/api_tob/delivery/bizDelivery/v1.0", request, DeliveryBizResponse.class);
     }
+
+    /**
+     * 按运单号查询物流轨迹，节点顺序由平台根据请求参数返回
+     */
+    public LogisticsQueryResponse logisticsQuery(LogisticsQueryRequest request) throws ApiException {
+        return client.execute("/api_tob/logisticsQuery/v1.0", request, LogisticsQueryResponse.class);
+    }
 }

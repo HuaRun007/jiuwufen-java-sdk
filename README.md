@@ -178,11 +178,12 @@ for (ConsignOrderInfoResponse.OrderItem order : response.getOrderList()) {
 | `order().getConsignBatchOrderList()` | 自送货订单明细查询 |
 | `order().getOrderList()` | 获取订单列表（挂售） |
 
-### 物流管理 (1个接口)
+### 物流管理 (2个接口)
 
 | 方法 | 说明 |
 |------|------|
 | `delivery().deliveryBiz()` | 发货 & 重打面单 |
+| `delivery().logisticsQuery()` | 查询运单物流轨迹 |
 
 ## ⚙️ 配置选项
 
