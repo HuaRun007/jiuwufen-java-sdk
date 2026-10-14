@@ -20,7 +20,8 @@ import java.util.*;
  */
 public class SignatureUtil {
 
-    private static final Gson GSON = new GsonBuilder().create();
+    /** 签名沿用旧 SDK 的 JSON 文本，单引号及 HTML 符号不得转义后参与摘要。 */
+    private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     /**
      * 生成请求签名
@@ -55,8 +56,8 @@ public class SignatureUtil {
                 if (value instanceof String) {
                     paramsStr.append(value);
                 } else {
-                    // 只排序顶层参数，嵌套对象保留请求中的字段顺序，与旧发布签名一致
-//                     paramsStr.append(GSON.toJson(sortMapKeys(value)));
+                    // 只排序顶层参数；嵌套对象保留字段顺序和布尔值，文本转义与旧发布协议一致。
+                    //                     paramsStr.append(GSON.toJson(sortMapKeys(value)));
                     paramsStr.append(GSON.toJson(value));
                 }
             }

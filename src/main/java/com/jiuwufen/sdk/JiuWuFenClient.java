@@ -75,7 +75,9 @@ public class JiuWuFenClient {
     private final DigitalProductApi digitalProductApi;
 
     /**
-     * 私有构造函数，使用 Builder 模式创建实例
+     * 使用已校验的配置创建客户端，统一旧协议签名与请求体的序列化方式。
+     *
+     * @param builder 已校验身份、密钥及连接配置的构建器
      */
     private JiuWuFenClient(Builder builder) {
         this.erpName = builder.erpName;
@@ -99,8 +101,9 @@ public class JiuWuFenClient {
 
         this.httpClient = httpBuilder.build();
 
-        // 初始化 Gson
+        // 与签名工具同步关闭 HTML 转义，避免单引号等业务文本改变旧协议的签名字节。
         this.gson = new GsonBuilder()
+                .disableHtmlEscaping()
                 .setDateFormat("yyyy-MM-dd HH:mm:ss")
                 .create();
 
@@ -197,12 +200,11 @@ public class JiuWuFenClient {
             String jsonBody = gson.toJson(bodyParams);
             RequestBody body = RequestBody.create(jsonBody, JSON);
 
-            // 构建请求
+            // 沿用旧 SDK 默认验签协议，不携带会切换平台验签规则的 m1 版本头。
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
                     .addHeader("Content-Type", "application/json; charset=UTF-8")
-                    .addHeader("x-request-sign-version", "m1")
                     .addHeader("fen95-external-third-erp-name", erpName)
                     .addHeader("fen95-external-third", thirdPartyId)
                     .build();
@@ -281,11 +283,11 @@ public class JiuWuFenClient {
             String jsonBody = gson.toJson(bodyParams);
             RequestBody body = RequestBody.create(jsonBody, JSON);
 
+            // 泛型响应调用也沿用旧 SDK 默认验签协议，避免两种执行入口产生不同验签行为。
             Request request = new Request.Builder()
                     .url(url)
                     .post(body)
                     .addHeader("Content-Type", "application/json; charset=UTF-8")
-                    .addHeader("x-request-sign-version", "m1")
                     .addHeader("fen95-external-third-erp-name", erpName)
                     .addHeader("fen95-external-third", thirdPartyId)
                     .build();
