@@ -73,6 +73,7 @@ public class JiuWuFenClient {
     private final OrderApi orderApi;
     private final DeliveryApi deliveryApi;
     private final DigitalProductApi digitalProductApi;
+    private final AssignBlameApi assignBlameApi;
 
     /**
      * 使用已校验的配置创建客户端，统一旧协议签名与请求体的序列化方式。
@@ -114,6 +115,7 @@ public class JiuWuFenClient {
         this.orderApi = new OrderApi(this);
         this.deliveryApi = new DeliveryApi(this);
         this.digitalProductApi = new DigitalProductApi(this);
+        this.assignBlameApi = new AssignBlameApi(this);
     }
 
     /**
@@ -156,6 +158,13 @@ public class JiuWuFenClient {
      */
     public DigitalProductApi digitalProduct() {
         return digitalProductApi;
+    }
+
+    /**
+     * 数码判责 API
+     */
+    public AssignBlameApi assignBlame() {
+        return assignBlameApi;
     }
 
     /**
