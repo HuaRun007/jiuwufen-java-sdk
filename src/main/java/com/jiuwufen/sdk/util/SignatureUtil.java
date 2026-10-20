@@ -24,7 +24,7 @@ public class SignatureUtil {
     private static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
 
     /**
-     * 生成请求签名
+     * 按生产规则生成请求签名，嵌套对象保留字段顺序
      *
      * <p>算法: token = md5(base64_encode(商家密钥 + 平台密钥) + 排序并拼接后的参数字符串)
      *
@@ -36,6 +36,16 @@ public class SignatureUtil {
     public static String generateSignature(Map<String, Object> params,
                                            String merchantSecret,
                                            String platformSecret) {
+        return generateSignature(params, merchantSecret, platformSecret, false);
+    }
+
+    /**
+     * 顶层参数始终排序，测试环境通过 sortNestedKeys 开启嵌套 Map 递归排序，数组顺序保持不变
+     */
+    public static String generateSignature(Map<String, Object> params,
+                                           String merchantSecret,
+                                           String platformSecret,
+                                           boolean sortNestedKeys) {
         try {
             // Gson/objectToMap 会把 JSON 数字变成 Double，toJson 会得到 12.0；与 Go json.Marshal 的 12 不一致，签名会错
             normalizeIntegralNumbersInPlace(params);
@@ -56,9 +66,8 @@ public class SignatureUtil {
                 if (value instanceof String) {
                     paramsStr.append(value);
                 } else {
-                    // 只排序顶层参数；嵌套对象保留字段顺序和布尔值，文本转义与旧发布协议一致。
-                    //                     paramsStr.append(GSON.toJson(sortMapKeys(value)));
-                    paramsStr.append(GSON.toJson(value));
+                    // 仅在测试环境显式启用嵌套排序，生产环境保留原字段顺序
+                    paramsStr.append(GSON.toJson(sortNestedKeys ? sortMapKeys(value) : value));
                 }
             }
 
@@ -138,7 +147,7 @@ public class SignatureUtil {
     }
 
     /**
-     * 验证签名
+     * 按生产规则验证签名，嵌套对象保留字段顺序
      *
      * @param params         请求参数
      * @param expectedToken  期望的签名
@@ -150,7 +159,18 @@ public class SignatureUtil {
                                           String expectedToken,
                                           String merchantSecret,
                                           String platformSecret) {
-        String actualToken = generateSignature(params, merchantSecret, platformSecret);
+        return verifySignature(params, expectedToken, merchantSecret, platformSecret, false);
+    }
+
+    /**
+     * 使用与生成方相同的嵌套排序规则验证签名，测试环境须显式传入 true
+     */
+    public static boolean verifySignature(Map<String, Object> params,
+                                          String expectedToken,
+                                          String merchantSecret,
+                                          String platformSecret,
+                                          boolean sortNestedKeys) {
+        String actualToken = generateSignature(params, merchantSecret, platformSecret, sortNestedKeys);
         return actualToken.equals(expectedToken);
     }
 

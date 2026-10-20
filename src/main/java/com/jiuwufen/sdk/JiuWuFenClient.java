@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
  *         .merchantSecret("your-merchant-secret")
  *         .platformSecret("your-platform-secret")
  *         .baseUrl("http://d1.95fenapp.com")
+ *         .sortNestedKeys(true)
  *         .build();
  *
  * // 调用 API
@@ -59,6 +60,8 @@ public class JiuWuFenClient {
     private final String thirdPartyId;
     private final String merchantSecret;
     private final String platformSecret;
+    /** 测试环境显式开启嵌套排序，默认按生产规则保留嵌套字段顺序 */
+    private final boolean sortNestedKeys;
     @Getter
     private final String baseUrl;
     private final OkHttpClient httpClient;
@@ -85,6 +88,7 @@ public class JiuWuFenClient {
         this.thirdPartyId = builder.thirdPartyId;
         this.merchantSecret = builder.merchantSecret;
         this.platformSecret = builder.platformSecret;
+        this.sortNestedKeys = builder.sortNestedKeys;
         this.baseUrl = builder.baseUrl;
         this.debug = builder.debug;
 
@@ -188,7 +192,7 @@ public class JiuWuFenClient {
             }
 
             // 生成签名
-            String signature = SignatureUtil.generateSignature(params, merchantSecret, platformSecret);
+            String signature = SignatureUtil.generateSignature(params, merchantSecret, platformSecret, sortNestedKeys);
             params.put("token", signature);
 
             // timestamp、token 拼到 URL 查询参数（与网关/GenSign 合并 GET 参数一致）；body 仅业务字段
@@ -272,7 +276,7 @@ public class JiuWuFenClient {
                 params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
             }
 
-            String signature = SignatureUtil.generateSignature(params, merchantSecret, platformSecret);
+            String signature = SignatureUtil.generateSignature(params, merchantSecret, platformSecret, sortNestedKeys);
             params.put("token", signature);
 
             HttpUrl httpUrl = HttpUrl.parse(baseUrl + path);
@@ -428,6 +432,8 @@ public class JiuWuFenClient {
         private String thirdPartyId;
         private String merchantSecret;
         private String platformSecret;
+        /** 默认使用生产规则，不根据 URL 自动切换签名方式 */
+        private boolean sortNestedKeys = false;
         private String baseUrl = "http://www.95fenapp.com";
         private long connectTimeout = 10;
         private long readTimeout = 30;
@@ -471,6 +477,14 @@ public class JiuWuFenClient {
          */
         public Builder baseUrl(String baseUrl) {
             this.baseUrl = baseUrl;
+            return this;
+        }
+
+        /**
+         * 设置签名时是否递归排序嵌套 Map，测试环境开启，生产环境默认关闭
+         */
+        public Builder sortNestedKeys(boolean sortNestedKeys) {
+            this.sortNestedKeys = sortNestedKeys;
             return this;
         }
 

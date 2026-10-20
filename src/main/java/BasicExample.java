@@ -24,6 +24,7 @@ public class BasicExample {
                     .merchantSecret("your-merchant-secret")
                     .platformSecret("your-platform-secret")
                     .baseUrl("http://d1.95fenapp.com")
+                    .sortNestedKeys(true) // 测试环境开启；生产环境删除此配置或设为 false
                     .debug(true)
                     .build();
 
@@ -58,7 +59,7 @@ public class BasicExample {
             addGoodsRequest.setQuality(20);
 
             AddOrderGoodsResponse addResponse = client.goods().addOrderGoods(addGoodsRequest);
-            System.out.println("商品添加成功! Status: " + addResponse.getStatus());
+//            System.out.println("商品添加成功! Status: " + addResponse.getStatus());
 
             // 示例4: 库存同步
             System.out.println("\n=== 示例4: 库存同步 ===");

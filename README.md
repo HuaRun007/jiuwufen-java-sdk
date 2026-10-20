@@ -48,6 +48,7 @@ JiuWuFenClient client = JiuWuFenClient.builder()
     .merchantSecret("your-merchant-secret") // 商家密钥
     .platformSecret("your-platform-secret") // 平台密钥
     .baseUrl("http://d1.95fenapp.com")     // 开发环境
+    .sortNestedKeys(true)                   // 测试环境显式开启嵌套排序
     .connectTimeout(10)                     // 连接超时（秒）
     .readTimeout(30)                        // 读取超时（秒）
     .debug(true)                            // 开启调试模式
@@ -192,16 +193,23 @@ for (ConsignOrderInfoResponse.OrderItem order : response.getOrderList()) {
 ```java
 // 开发环境
 .baseUrl("http://d1.95fenapp.com")
+.sortNestedKeys(true)
 
 // 测试环境
 .baseUrl("http://t1.95fenapp.com")
+.sortNestedKeys(true)
 
 // 预发环境
 .baseUrl("http://stg-www.95fenapp.com")
 
 // 生产环境
 .baseUrl("http://www.95fenapp.com")
+.sortNestedKeys(false) // 默认值，可省略
 ```
+
+签名规则由客户端实例的 `sortNestedKeys` 控制，不根据 URL 自动推断。默认使用生产规则，仅排序顶层参数；测试环境显式设置为 `true`，递归排序嵌套 Map 的键，数组顺序保持不变。预发环境按实际网关规则显式配置。
+
+直接调用 `SignatureUtil.generateSignature` 或 `verifySignature` 时，原方法默认使用生产规则；测试环境使用新增重载，在最后传入 `true`。
 
 ### 超时配置
 
