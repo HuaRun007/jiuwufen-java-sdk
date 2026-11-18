@@ -22,14 +22,24 @@ public class DigitalProductApi {
      * 质检项查询 (ExaminingConfig)
      */
     public JsonObject examiningConfig(ExaminingConfigRequest request) throws ApiException {
-        return client.execute("/api_tob/examiningConfig/v1.0", request, JsonObject.class);
+        return examiningConfig(request, 0);
+    }
+
+    /** 质检项查询，可指定本次 HTTP 调用的总超时（秒） */
+    public JsonObject examiningConfig(ExaminingConfigRequest request, long timeoutSeconds) throws ApiException {
+        return client.execute("/api_tob/examiningConfig/v1.0", request, JsonObject.class, timeoutSeconds);
     }
 
     /**
      * IMEI 查询 (Imei)
      */
     public JsonObject imeiQuery(ImeiQueryRequest request) throws ApiException {
-        return client.execute("/api_tob/imei/v1.0", request, JsonObject.class);
+        return imeiQuery(request, 0);
+    }
+
+    /** IMEI 查询，可指定本次 HTTP 调用的总超时（秒） */
+    public JsonObject imeiQuery(ImeiQueryRequest request, long timeoutSeconds) throws ApiException {
+        return client.execute("/api_tob/imei/v1.0", request, JsonObject.class, timeoutSeconds);
     }
 
     /**
@@ -42,7 +52,12 @@ public class DigitalProductApi {
      * @see DigitalSuperSaleAddress
      */
     public JsonObject digitalSuperSale(DigitalSuperSaleRequest request) throws ApiException {
-        return client.execute("/api_tob/digitalSuperSale/v1.0", request, JsonObject.class);
+        return digitalSuperSale(request, 0);
+    }
+
+    /** 一键出售 - 平台商家，可指定本次 HTTP 调用的总超时（秒） */
+    public JsonObject digitalSuperSale(DigitalSuperSaleRequest request, long timeoutSeconds) throws ApiException {
+        return client.execute("/api_tob/digitalSuperSale/v1.0", request, JsonObject.class, timeoutSeconds);
     }
 
     /**
@@ -53,7 +68,12 @@ public class DigitalProductApi {
      * @see DigitalSuperSaleAddress
      */
     public JsonObject digitalSuperSaleV2(DigitalSuperSaleV2Request request) throws ApiException {
-        return client.execute("/api_tob/digitalSuperSale/v2.0", request, JsonObject.class);
+        return digitalSuperSaleV2(request, 0);
+    }
+
+    /** 一键出售 - 自研商家，可指定本次 HTTP 调用的总超时（秒） */
+    public JsonObject digitalSuperSaleV2(DigitalSuperSaleV2Request request, long timeoutSeconds) throws ApiException {
+        return client.execute("/api_tob/digitalSuperSale/v2.0", request, JsonObject.class, timeoutSeconds);
     }
 
     /**
@@ -66,8 +86,14 @@ public class DigitalProductApi {
      * @throws ApiException 平台业务拒绝或客户端调用失败，保留现有错误码和请求号
      */
     public PlatformDeliverResponse platformDeliver(PlatformDeliverRequest request) throws ApiException {
+        return platformDeliver(request, 0);
+    }
+
+    /** 非后验订单打印面单并发货，沿用旧SDK的商品编码协议，可指定本次 HTTP 调用的总超时（秒） */
+    public PlatformDeliverResponse platformDeliver(PlatformDeliverRequest request, long timeoutSeconds)
+            throws ApiException {
         // 只委托现有客户端，统一复用签名、HTTP和公共响应解析。
-        return client.execute("/api_tob/platformDeliver/v1.0", request, PlatformDeliverResponse.class);
+        return client.execute("/api_tob/platformDeliver/v1.0", request, PlatformDeliverResponse.class, timeoutSeconds);
     }
 
     /**
@@ -80,20 +106,37 @@ public class DigitalProductApi {
      * @throws ApiException 平台业务拒绝或客户端调用失败，保留现有错误码和请求号
      */
     public InspectLogisticsResponse inspectLogisticsQuery(InspectLogisticsRequest request) throws ApiException {
-        return client.execute("/api_tob/inspectLogisticsQuery/v1.0", request, InspectLogisticsResponse.class);
+        return inspectLogisticsQuery(request, 0);
+    }
+
+    /** 后验订单发货打单，沿用旧SDK的商品集合、配送方式及原运单参数，可指定本次 HTTP 调用的总超时（秒） */
+    public InspectLogisticsResponse inspectLogisticsQuery(InspectLogisticsRequest request, long timeoutSeconds)
+            throws ApiException {
+        return client.execute("/api_tob/inspectLogisticsQuery/v1.0", request, InspectLogisticsResponse.class, timeoutSeconds);
     }
 
     /**
      * 后验退回签收 (InspectSignReceipt)
      */
     public JsonObject inspectSignReceipt(InspectSignReceiptRequest request) throws ApiException {
-        return client.execute("/api_tob/inspectSignReceipt/v1.0", request, JsonObject.class);
+        return inspectSignReceipt(request, 0);
+    }
+
+    /** 后验退回签收，可指定本次 HTTP 调用的总超时（秒） */
+    public JsonObject inspectSignReceipt(InspectSignReceiptRequest request, long timeoutSeconds) throws ApiException {
+        return client.execute("/api_tob/inspectSignReceipt/v1.0", request, JsonObject.class, timeoutSeconds);
     }
 
     /**
      * 绑扣/更新绑扣 (BindCertificate)
      */
     public JsonObject bindCertificateBuckle(BindCertificateBuckleRequest request) throws ApiException {
-        return client.execute("/api_tob/bindCertificateBuckle/v1.0", request, JsonObject.class);
+        return bindCertificateBuckle(request, 0);
+    }
+
+    /** 绑扣/更新绑扣，可指定本次 HTTP 调用的总超时（秒） */
+    public JsonObject bindCertificateBuckle(BindCertificateBuckleRequest request, long timeoutSeconds)
+            throws ApiException {
+        return client.execute("/api_tob/bindCertificateBuckle/v1.0", request, JsonObject.class, timeoutSeconds);
     }
 }

@@ -26,7 +26,12 @@ public class MerchantApi {
      * @throws ApiException API 异常
      */
     public SendSMSResponse sendSMSCaptcha(SendSMSRequest request) throws ApiException {
-        return client.execute("/api_tob/erpSendSmsCaptcha/v1.0", request, SendSMSResponse.class);
+        return sendSMSCaptcha(request, 0);
+    }
+
+    /** 发送短信验证码，可指定本次 HTTP 调用的总超时（秒） */
+    public SendSMSResponse sendSMSCaptcha(SendSMSRequest request, long timeoutSeconds) throws ApiException {
+        return client.execute("/api_tob/erpSendSmsCaptcha/v1.0", request, SendSMSResponse.class, timeoutSeconds);
     }
 
     /**
@@ -37,6 +42,11 @@ public class MerchantApi {
      * @throws ApiException API 异常
      */
     public CheckSMSResponse checkSMSCaptcha(CheckSMSRequest request) throws ApiException {
-        return client.execute("/api_tob/erpCheckSmsCaptcha/v1.0", request, CheckSMSResponse.class);
+        return checkSMSCaptcha(request, 0);
+    }
+
+    /** 校验短信验证码，可指定本次 HTTP 调用的总超时（秒） */
+    public CheckSMSResponse checkSMSCaptcha(CheckSMSRequest request, long timeoutSeconds) throws ApiException {
+        return client.execute("/api_tob/erpCheckSmsCaptcha/v1.0", request, CheckSMSResponse.class, timeoutSeconds);
     }
 }

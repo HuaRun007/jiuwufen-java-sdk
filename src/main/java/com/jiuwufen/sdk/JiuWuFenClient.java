@@ -182,6 +182,25 @@ public class JiuWuFenClient {
      * @throws ApiException API 异常
      */
     public <T> T execute(String path, Object requestBody, Class<T> responseClass) throws ApiException {
+        return execute(path, requestBody, responseClass, 0);
+    }
+
+    /** 使用本次 HTTP 请求的总超时（秒）解析指定类型的响应 */
+    public <T> T execute(String path, Object requestBody, Class<T> responseClass, long timeoutSeconds)
+            throws ApiException {
+        return execute(path, requestBody, (Type) responseClass, timeoutSeconds);
+    }
+
+    /** 使用公共配置获取列表等泛型响应 */
+    public <T> T execute(String path, Object requestBody, Type dataType) throws ApiException {
+        return execute(path, requestBody, dataType, 0);
+    }
+
+    /** 执行 HTTP 请求并按指定类型解析，超时单位为秒，0 沿用公共配置 */
+    public <T> T execute(String path, Object requestBody, Type dataType, long timeoutSeconds) throws ApiException {
+        if (timeoutSeconds < 0) {
+            throw new IllegalArgumentException("timeoutSeconds must be non-negative");
+        }
         try {
             // 构建请求参数
             Map<String, Object> params = objectToMap(requestBody);
@@ -227,8 +246,12 @@ public class JiuWuFenClient {
                 logger.debug("Request Body: {}", jsonBody);
             }
 
-            // 执行请求
-            try (Response response = httpClient.newCall(request).execute()) {
+            // 总超时只作用于当前请求，连接和读写仍受各自的阶段超时约束
+            Call call = httpClient.newCall(request);
+            if (timeoutSeconds > 0) {
+                call.timeout().timeout(timeoutSeconds, TimeUnit.SECONDS);
+            }
+            try (Response response = call.execute()) {
                 String responseBody = response.body() != null ? response.body().string() : "";
 
                 if (debug) {
@@ -241,90 +264,9 @@ public class JiuWuFenClient {
                 }
 
                 // 统一兼容接口以空数组表示空对象的响应。
-                CommonResponse<T> commonResponse = parseResponse(responseBody, responseClass);
-
-                // 检查业务状态码
-                if (commonResponse.getStatus() != 0) {
-                    throw new ApiException(
-                            commonResponse.getStatus(),
-                            commonResponse.getMsg(),
-                            commonResponse.getReqId());
-                }
-
-                return commonResponse.getData();
-            }
-        } catch (IOException e) {
-            logger.error("Network error", e);
-            throw new ApiException(-1, "Network error: " + e.getMessage(), "");
-        } catch (ApiException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error", e);
-            throw new ApiException(-1, "Unexpected error: " + e.getMessage(), "");
-        }
-    }
-
-    /**
-     * 执行 HTTP 请求，{@code data} 使用任意 Gson {@link Type}（例如 {@code List<Item>}）。
-     */
-    @SuppressWarnings("unchecked")
-    public <T> T execute(String path, Object requestBody, Type dataType) throws ApiException {
-        try {
-            Map<String, Object> params = objectToMap(requestBody);
-
-            if (!params.containsKey("timestamp")) {
-                params.put("timestamp", String.valueOf(System.currentTimeMillis() / 1000));
-            }
-
-            String signature = SignatureUtil.generateSignature(params, merchantSecret, platformSecret, sortNestedKeys);
-            params.put("token", signature);
-
-            HttpUrl httpUrl = HttpUrl.parse(baseUrl + path);
-            if (httpUrl == null) {
-                throw new ApiException(-1, "Invalid URL: " + baseUrl + path, "");
-            }
-            Object ts = params.get("timestamp");
-            String url = httpUrl.newBuilder()
-                    .addQueryParameter("timestamp", ts == null ? "" : String.valueOf(ts))
-                    .addQueryParameter("token", signature)
-                    .build()
-                    .toString();
-
-            Map<String, Object> bodyParams = new LinkedHashMap<>(params);
-            bodyParams.remove("timestamp");
-            bodyParams.remove("token");
-            String jsonBody = gson.toJson(bodyParams);
-            RequestBody body = RequestBody.create(jsonBody, JSON);
-
-            // 泛型响应调用也沿用旧 SDK 默认验签协议，避免两种执行入口产生不同验签行为。
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(body)
-                    .addHeader("Content-Type", "application/json; charset=UTF-8")
-                    .addHeader("fen95-external-third-erp-name", erpName)
-                    .addHeader("fen95-external-third", thirdPartyId)
-                    .build();
-
-            if (debug) {
-                logger.debug("Request URL: {}", url);
-                logger.debug("Request Body: {}", jsonBody);
-            }
-
-            try (Response response = httpClient.newCall(request).execute()) {
-                String responseBody = response.body() != null ? response.body().string() : "";
-
-                if (debug) {
-                    logger.debug("Response Code: {}", response.code());
-                    logger.debug("Response Body: {}", responseBody);
-                }
-
-                if (!response.isSuccessful()) {
-                    throw new ApiException(-1, "HTTP Error: " + response.code(), "");
-                }
-
-                // 泛型响应与 Class 响应使用相同的空数组兼容规则。
                 CommonResponse<T> commonResponse = parseResponse(responseBody, dataType);
 
+                // 检查业务状态码
                 if (commonResponse.getStatus() != 0) {
                     throw new ApiException(
                             commonResponse.getStatus(),

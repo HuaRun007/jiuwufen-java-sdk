@@ -30,6 +30,12 @@ public class AssignBlameApi {
      * @return 判责单列表及总数
      */
     public AssignBlameListResponse assignBlameList(AssignBlameListRequest request) throws ApiException {
-        return client.execute(ASSIGN_BLAME_LIST_PATH, request, AssignBlameListResponse.class);
+        return assignBlameList(request, 0);
+    }
+
+    /** 数码判责单信息查询，可指定本次 HTTP 调用的总超时（秒） */
+    public AssignBlameListResponse assignBlameList(AssignBlameListRequest request, long timeoutSeconds)
+            throws ApiException {
+        return client.execute(ASSIGN_BLAME_LIST_PATH, request, AssignBlameListResponse.class, timeoutSeconds);
     }
 }

@@ -222,6 +222,15 @@ JiuWuFenClient client = JiuWuFenClient.builder()
     .build();
 ```
 
+各业务接口均可在调用时指定本次 HTTP 请求的总超时（秒）：
+
+```java
+client.order().getOrderList(request, 2); // 仅这次请求限时 2 秒
+client.order().getOrderList(request);    // 使用客户端公共配置
+```
+
+省略超时参数或传入 0 时沿用公共配置。正数限制当前请求从发起到读完响应体的总时长，连接、读取和写入各自的超时仍然生效。
+
 ### 调试模式
 
 ```java
